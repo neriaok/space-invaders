@@ -1,0 +1,41 @@
+body {
+    background-color: rgb(65, 7, 7) ;
+    text-align: center;
+    color: red;
+  }
+  
+  .board-container {
+    margin: auto;
+  }
+
+  .board td {
+    width: 30px;
+    height: 30px;
+    border: 1px outset red;
+    padding: 3px;
+    text-align: center;
+    color: white;
+    font-size: 1rem;
+    
+}
+.wall{
+  background-color: brown;
+}
+.btn{
+  margin: auto;
+  width: 100px;
+  background-color: royalblue;
+  color:aliceblue;
+  border-style:groove;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight:bolder;
+  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+
+}
+.score{
+  border: 1px solid red;
+  background-color:black ;
+  margin: auto;
+  width: 100px;
+}
