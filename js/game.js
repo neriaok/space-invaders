@@ -21,8 +21,8 @@ function init() {
     console.log('aliens:', gAliens);
     gIsAlienFreeze = true
 
-    // if(gIntervalAliens) clearInterval(gIntervalAliens)
-    // gIntervalAliens = setInterval(moveAlien, ALIEN_SPEED)
+    
+    // handleAlienHit()
     }
 
 
@@ -42,7 +42,7 @@ function createBoard() {
         }
     }
     createHero(board)
-    createAliens(board)
+    createAliens(board , gAliensBottomRowIdx, gAliensTopRowIdx , 0 , ALIEN_ROW_LENGTH - 1)
     return board
 }
 
