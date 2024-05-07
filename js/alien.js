@@ -2,27 +2,53 @@ const ALIEN_SPEED = 500
 const ALIEN_ROW_LENGTH = 8
 const ALIEN_ROW_COUNT = 3
 
-var gMoveDiff = { i: 0, j: 1 }
+
+var gMoveDiff
 
 
 var gAliens
-var gIsWall = false
+var gNextId
+var gIsWall
 
-var gAliensTopRowIdx = 2
-var gAliensBottomRowIdx = 0
+var gAliensTopRowIdx
+var gAliensBottomRowIdx
 
 var gIntervalAliens
+var gTheGrave
 
 
-var gIsAlienFreeze = false
+
+function createAliens(board) {
+    gAliens = []
+    for (var i = ALIEN_ROW_COUNT - 1; i >= 0; i--) {
+        for (var j = ALIEN_ROW_LENGTH - 1; j >= 0; j--) {
+
+            var alien = {
+                location: {
+                    id: gNextId++,
+                    i: i,
+                    j: j
+                }
+            }
+            gAliens.push(alien)
+            board[alien.location.i][alien.location.j].gameObject = ALIEN
 
 
-function createAliens(board, fromI, toI, fromJ, toJ) {
+            if (gIntervalAliens) clearInterval(gIntervalAliens)
+            gIntervalAliens = setInterval(moveAlien, ALIEN_SPEED)
+
+        }
+    }
+}
+
+function createAliensTWO(board, fromI, toI, fromJ, toJ) {
+    gNextId = 101
     gAliens = []
     for (var i = toI; i >= fromI; i--) {
         for (var j = toJ; j >= fromJ; j--) {
 
             var alien = {
+                id: gNextId++,
                 location: {
                     i: i,
                     j: j
@@ -31,10 +57,34 @@ function createAliens(board, fromI, toI, fromJ, toJ) {
             gAliens.push(alien)
             board[alien.location.i][alien.location.j].gameObject = ALIEN
 
-            if (gIntervalAliens) clearInterval(gIntervalAliens)
-            gIntervalAliens = setInterval(moveAlien, ALIEN_SPEED)
+            renderCell(alien.location, ALIEN)
+
+            checkTheGrave(alien)
+
         }
     }
+}
+
+function checkTheGrave(alien) {
+    var posI = getAlienById(alien.id, gAliens)
+    var posj = getAlienById(alien.id, gTheGrave)
+
+    if (posj !== null) {
+        gAliens.splice(posI, 1)
+        gTheGrave.push(alien)
+        // kill alien in the MODAL & DOM
+        gBoard[alien.location.i][alien.location.j].gameObject = null
+        renderCell(alien.location, EMPTY)
+    }
+}
+
+
+function getAlienById(alienId, array) {
+    for (var i = 0; i < array.length; i++) {
+        var alien = array[i]
+        if (alien.id === alienId) return i
+    }
+    return null // if the id dont exist===out from the loop return null.
 }
 function cleanAliens() {
     gIsWall = true
@@ -42,7 +92,10 @@ function cleanAliens() {
     for (var i = 0; i < gBoard.length; i++) {
         for (var j = 0; j < gBoard[0].length; j++) {
             var cell = gBoard[i][j]
-            if (cell.gameObject === ALIEN) gBoard[i][j].gameObject = null
+            if (cell.gameObject === ALIEN) {
+                gBoard[i][j].gameObject = null
+                renderCell({ i: i, j: j }, EMPTY)
+            }
         }
     }
 }
@@ -65,17 +118,26 @@ function moveAlienleft() {
 
 
 function moveAliens(alien) {
-
+    if (!gGame.isOn) return
     const nextLocation = {
         i: alien.location.i + gMoveDiff.i,
         j: alien.location.j + gMoveDiff.j
     }
 
+    if (nextLocation.i === BOARD_SIZE - 2) {
+        gGame.isOn = false
+        gameOver()
+        showBtn()
+        return
+    }
+
     handleAlienHit(nextLocation)
+
     // if (gIsWall) return
     const nextCell = gBoard[nextLocation.i][nextLocation.j]
-
     var before = nextCell.gameObject === ALIEN ? ALIEN : null
+
+
 
     // moving from current location:
     // update MODAL
@@ -99,16 +161,14 @@ function handleAlienHit(pos) {
     } else if (pos.j === -1) {
         shiftBoardRight()
     }
-
 }
 function shiftBoardRight() {
     gAliensTopRowIdx++
     gAliensBottomRowIdx++
-    cleanAliens()
-    createAliens(gBoard, gAliensBottomRowIdx, gAliensTopRowIdx, 0, ALIEN_ROW_LENGTH - 1)
+    shiftBoardDown(0, ALIEN_ROW_LENGTH - 1)
     console.log('clear');
     clearInterval(gIntervalAliens)
-    renderBoard(gBoard)
+    // renderBoard(gBoard)
 
     gMoveDiff = { i: 0, j: 1 }
     gIntervalAliens = setInterval(moveAlien, ALIEN_SPEED)
@@ -117,15 +177,15 @@ function shiftBoardRight() {
 function shiftBoardLeft() {
     gAliensTopRowIdx++
     gAliensBottomRowIdx++
-    shiftBoardDown()
+    shiftBoardDown(6, 13)
     clearInterval(gIntervalAliens)
-    renderBoard(gBoard)
+    // renderBoard(gBoard)
 
     gMoveDiff = { i: 0, j: -1 }
     gIntervalAliens = setInterval(moveAlienleft, ALIEN_SPEED)
 }
 
-function shiftBoardDown() {
+function shiftBoardDown(fromJ, toJ) {
     cleanAliens()
-    createAliens(gBoard, gAliensBottomRowIdx, gAliensTopRowIdx, 6, 13)
+    createAliensTWO(gBoard, gAliensBottomRowIdx, gAliensTopRowIdx, fromJ, toJ)
 }

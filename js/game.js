@@ -9,22 +9,50 @@ const EMPTY = ' '
 const HERO = '🗼'
 const ALIEN = '👽'
 var LASER = '⚡'
+var CANDIE = '🌟'
 
 var gBoard
-var gGame = { isOn: true, alienCount: 0 ,gameDone: false}
+var gGame
 
 
 function init() {
+
     gBoard = createBoard()
     console.log('board', gBoard);
     renderBoard(gBoard)
+    // clearInterval(gIntervalAliens)
     console.log('aliens:', gAliens);
-    gIsAlienFreeze = true
+    gGame = { isOn: false, alienCount: 0 }
+    document.querySelector('.popup').hidden = true
 
-    
-    // handleAlienHit()
+
+    gHero = { pos: { i: 12, j: 6 }, isShoot: false }
+    glazer = { pos: { i: gHero.pos.i - 1, j: gHero.pos.j }, KillScore: 0, superModeCount: 3 }
+
+    gMoveDiff = { i: 0, j: 1 }
+    gNextId = 101
+    gIsWall = true
+    gAliensTopRowIdx = 2
+    gAliensBottomRowIdx = 0
+    gTheGrave = []
+    updateScore()
+    gCandieInterval = setInterval(addCandie, 10000)
+}
+function addCandie() {
+    if(!gGame.isOn) return
+    var randIdx = getRandomInt(0, BOARD_SIZE)
+    var pos = {
+        i: 0,
+        j: randIdx
     }
+    gBoard[pos.i][pos.j].gameObject = CANDIE
+    renderCell(pos, CANDIE)
 
+    setTimeout(() => {
+        gBoard[pos.i][pos.j].gameObject = null
+        renderCell(pos, EMPTY)
+    }, 5000);
+}
 
 function createBoard() {
 
@@ -42,7 +70,7 @@ function createBoard() {
         }
     }
     createHero(board)
-    createAliens(board , gAliensBottomRowIdx, gAliensTopRowIdx , 0 , ALIEN_ROW_LENGTH - 1)
+    createAliens(board)
     return board
 }
 
@@ -65,6 +93,9 @@ function renderBoard(board) {
             if (currCell.gameObject === LASER) {
                 strHTML += LASER
             }
+            if (currCell.gameObject === CANDIE) {
+                strHTML += CANDIE
+            }
 
             strHTML += '</td>'
         }
@@ -77,18 +108,32 @@ function renderBoard(board) {
 function createCell(gameObject = null) {
     return { type: SKY, gameObject: gameObject }
 }
-function startBtn(){
-   gGame.isOn = true
-   var elBtn = document.querySelector('.btn-container')
-   elBtn.innerHTML = '<h4 class="btn"> GAME IS ON!!</h4>'
-//    elBtn.style.display = 'none'
-   
+function startBtn() {
+    gGame.isOn = true
+    var elBtn = document.querySelector('.btn-container')
+    elBtn.innerHTML = '<h4 class="btn"> GAME IS ON!!</h4>'
+    //    elBtn.style.display = 'none'
+
 }
-function showBtn(){
+function showBtn() {
     var elBtn = document.querySelector('.btn')
-   elBtn.innerHTML ='<button class="btn" onclick="restartBtn()">restart</button>'
-   elBtn.style.display = 'block'
+    elBtn.innerHTML = '<button class="btn" onclick="restartBtn()">restart</button>'
+    elBtn.style.display = 'block'
 }
-function restartBtn(){
+function restartBtn() {
     init()
+    var elBtn = document.querySelector('.btn')
+    elBtn.innerHTML = '<button class="btn" onclick="startBtn()">press for begin</button>'
+}
+function gameOver() {
+    console.log('sorry,you lose..play again!');
+    const elPopup = document.querySelector('.popup')
+    elPopup.hidden = false
+    elPopup.querySelector('h2').innerText = 'sorry 😥'
+    elPopup.querySelector('h3').innerText = 'you lose the game..you can play again!'
+}
+function isVictory() {
+    console.log('victory');
+    const elPopup = document.querySelector('.popup')
+    elPopup.hidden = false
 }

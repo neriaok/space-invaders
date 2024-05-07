@@ -1,8 +1,10 @@
 
 var LASER_SPEED = 80
 
-var gHero = { pos: { i: 12, j: 6 }, isShoot: false, isWin: false }
-var glazer = { pos: { i: gHero.pos.i - 1, j: gHero.pos.j }, KillScore: 0 , superModeCount: 3 }
+var gHero
+var glazer
+
+var gCandieInterval
 
 
 function createHero(board) {
@@ -40,7 +42,7 @@ function moveHero(ev) {
 }
 
 function onKeyDown(eventKeyboard) {
-    console.log(eventKeyboard);
+    // console.log(eventKeyboard);
 
     const nextLocation = {
         i: gHero.pos.i,
@@ -105,14 +107,23 @@ function blinkLaser(lazer) {
     if (lazer.pos.i !== -1) {
         var nextCell = gBoard[lazer.pos.i][lazer.pos.j]
 
-        console.log(nextCell);
+        // console.log(nextCell);
+        if (nextCell.gameObject === CANDIE) {
+            glazer.KillScore += 50
+            updateScore()
+            clearInterval(gIntervalAliens)
+            setTimeout(() => {
+                gIntervalAliens = setInterval(moveAlien, ALIEN_SPEED)
+            }, 5000);
+        }
 
         if (nextCell.gameObject === ALIEN) {
             killAlien(lazer)
+            glazer.KillScore += 10
+
             updateScore()
 
             if (!gAliens.length) {
-                gHero.isWin = true
                 gGame.isOn = false
                 isVictory()
                 showBtn()
@@ -137,8 +148,10 @@ function blinkLaser(lazer) {
 function killAlien(object) {
     for (var i = 0; i < gAliens.length; i++) {
         var alien = gAliens[i]
+        // console.log(alien);
         if (alien.location.i === object.pos.i && alien.location.j === object.pos.j) {
             gAliens.splice(i, 1)
+            gTheGrave.push(alien)
             // kill alien in the MODAL & DOM
             gBoard[object.pos.i][object.pos.j].gameObject = null
             renderCell(object.pos, EMPTY)
@@ -146,9 +159,7 @@ function killAlien(object) {
     }
 }
 
-function isVictory() {
-    console.log('victory');
-}
+
 
 function checkAlienNeigh(rowIdx, colIdx) {
     for (var i = rowIdx - 1; i <= rowIdx + 1; i++) {
@@ -171,7 +182,6 @@ function checkAlienNeigh(rowIdx, colIdx) {
     console.log('no alien around you!');
 }
 function updateScore() {
-    glazer.KillScore += 10
     var score = document.querySelector('.score span')
     score.innerText = glazer.KillScore
 }
