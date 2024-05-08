@@ -1,6 +1,7 @@
-const ALIEN_SPEED = 500
-const ALIEN_ROW_LENGTH = 8
-const ALIEN_ROW_COUNT = 3
+var ALIEN_SPEED = 500
+var ALIEN_ROW_LENGTH = 8
+var ALIEN_ROW_COUNT = 3
+var diffLevel = 2
 
 
 var gMoveDiff
@@ -157,10 +158,12 @@ function moveAliens(alien) {
 function handleAlienHit(pos) {
     if (pos.j === BOARD_SIZE) {
         shiftBoardLeft()
-
+        gIsWall = true
     } else if (pos.j === -1) {
         shiftBoardRight()
-    }
+        gIsWall = true
+    } else
+    gIsWall = false
 }
 function shiftBoardRight() {
     gAliensTopRowIdx++
@@ -177,7 +180,7 @@ function shiftBoardRight() {
 function shiftBoardLeft() {
     gAliensTopRowIdx++
     gAliensBottomRowIdx++
-    shiftBoardDown(6, 13)
+    shiftBoardDown(ALIEN_ROW_LENGTH - diffLevel, BOARD_SIZE-1)
     clearInterval(gIntervalAliens)
     // renderBoard(gBoard)
 
@@ -188,4 +191,9 @@ function shiftBoardLeft() {
 function shiftBoardDown(fromJ, toJ) {
     cleanAliens()
     createAliensTWO(gBoard, gAliensBottomRowIdx, gAliensTopRowIdx, fromJ, toJ)
+}
+function getAlienHTML(alien) {
+    var color = alien.color
+    return `<span class = "alien" style="background-color: ${color}" >${ALIEN}</span>`
+    
 }

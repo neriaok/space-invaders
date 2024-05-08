@@ -34,6 +34,19 @@ body {
 .btn {
   margin: auto;
   width: 100px;
+  background-color: white;
+  color: gold;
+  /* border-style:groove; */
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: bolder;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+.btnlevel {
+  margin: auto;
+  width: 100px;
   background-color: #a4a4a4;
   color: #4a1cd9;
   ;

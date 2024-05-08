@@ -37,9 +37,11 @@ function init() {
     gTheGrave = []
     updateScore()
     gCandieInterval = setInterval(addCandie, 10000)
+     if (gIntervalAliens) clearInterval(gIntervalAliens)
+        gIntervalAliens = setInterval(moveAlien, ALIEN_SPEED)
 }
 function addCandie() {
-    if(!gGame.isOn) return
+    if (!gGame.isOn) return
     var randIdx = getRandomInt(0, BOARD_SIZE)
     var pos = {
         i: 0,
@@ -116,14 +118,14 @@ function startBtn() {
 
 }
 function showBtn() {
-    var elBtn = document.querySelector('.btn')
+    var elBtn = document.querySelector('.btn-container')
     elBtn.innerHTML = '<button class="btn" onclick="restartBtn()">restart</button>'
     elBtn.style.display = 'block'
 }
 function restartBtn() {
     init()
-    var elBtn = document.querySelector('.btn')
-    elBtn.innerHTML = '<button class="btn" onclick="startBtn()">press for begin</button>'
+    var elBtn = document.querySelector('.btn-container')
+    elBtn.innerHTML = '<button class="btnlevel" onclick="level(500 , 8 , 2)">Easy</button><button class="btnlevel" onclick="level(400 , 10 , 6)">Normal</button><button class="btnlevel" onclick="level(300 , 12 , 10)">Hard</button><h1></h1><button class="btn" onclick="startBtn()">press for begin</button>'
 }
 function gameOver() {
     console.log('sorry,you lose..play again!');
@@ -136,4 +138,13 @@ function isVictory() {
     console.log('victory');
     const elPopup = document.querySelector('.popup')
     elPopup.hidden = false
+}
+
+function level(speed, length, diff) {
+    console.log('hi' , speed);
+    
+    ALIEN_SPEED = speed
+    ALIEN_ROW_LENGTH = length
+    diffLevel = diff
+    init()
 }
