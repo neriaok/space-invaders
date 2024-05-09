@@ -1,6 +1,6 @@
 body {
   font-family: 'Courier New', Courier, monospace;
-  background-image: url('/img/SPACE.jpg');
+  background-image: url(/img/SPACE.jpg);
   background-position: center;
   background-size: cover;
   text-align: center;

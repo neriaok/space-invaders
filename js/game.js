@@ -26,8 +26,9 @@ function init() {
     document.querySelector('.popup').hidden = true
 
 
-    gHero = { pos: { i: 12, j: 6 }, isShoot: false }
+    gHero = { pos: { i: 12, j: 6 }, isShoot: false , lives: 3}
     glazer = { pos: { i: gHero.pos.i - 1, j: gHero.pos.j }, KillScore: 0, superModeCount: 3 }
+    // gAlienShoot = false
 
     gMoveDiff = { i: 0, j: 1 }
     gNextId = 101
@@ -36,10 +37,12 @@ function init() {
     gAliensBottomRowIdx = 0
     gTheGrave = []
     updateScore()
+    updateLives()
     gCandieInterval = setInterval(addCandie, 10000)
      if (gIntervalAliens) clearInterval(gIntervalAliens)
         gIntervalAliens = setInterval(moveAlien, ALIEN_SPEED)
 }
+
 function addCandie() {
     if (!gGame.isOn) return
     var randIdx = getRandomInt(0, BOARD_SIZE)
@@ -92,12 +95,6 @@ function renderBoard(board) {
             if (currCell.gameObject === ALIEN) {
                 strHTML += ALIEN
             }
-            if (currCell.gameObject === LASER) {
-                strHTML += LASER
-            }
-            if (currCell.gameObject === CANDIE) {
-                strHTML += CANDIE
-            }
 
             strHTML += '</td>'
         }
@@ -110,6 +107,7 @@ function renderBoard(board) {
 function createCell(gameObject = null) {
     return { type: SKY, gameObject: gameObject }
 }
+
 function startBtn() {
     gGame.isOn = true
     var elBtn = document.querySelector('.btn-container')
@@ -117,16 +115,19 @@ function startBtn() {
     //    elBtn.style.display = 'none'
 
 }
+
 function showBtn() {
     var elBtn = document.querySelector('.btn-container')
     elBtn.innerHTML = '<button class="btn" onclick="restartBtn()">restart</button>'
     elBtn.style.display = 'block'
 }
+
 function restartBtn() {
     init()
     var elBtn = document.querySelector('.btn-container')
     elBtn.innerHTML = '<button class="btnlevel" onclick="level(500 , 8 , 2)">Easy</button><button class="btnlevel" onclick="level(400 , 10 , 6)">Normal</button><button class="btnlevel" onclick="level(300 , 12 , 10)">Hard</button><h1></h1><button class="btn" onclick="startBtn()">press for begin</button>'
 }
+
 function gameOver() {
     console.log('sorry,you lose..play again!');
     const elPopup = document.querySelector('.popup')
@@ -134,6 +135,7 @@ function gameOver() {
     elPopup.querySelector('h2').innerText = 'sorry 😥'
     elPopup.querySelector('h3').innerText = 'you lose the game..you can play again!'
 }
+
 function isVictory() {
     console.log('victory');
     const elPopup = document.querySelector('.popup')
@@ -147,4 +149,14 @@ function level(speed, length, diff) {
     ALIEN_ROW_LENGTH = length
     diffLevel = diff
     init()
+}
+
+function updateLives() {
+    var lives = document.querySelector('.lives span')
+    if (gHero.lives === 3) lives.innerText = '💙💙💙'
+    if (gHero.lives === 2) lives.innerText = '💙💙'
+    if (gHero.lives === 1) lives.innerText = '💙'
+    if (gHero.lives === 0){
+    lives.innerText = '⛔'
+    } 
 }

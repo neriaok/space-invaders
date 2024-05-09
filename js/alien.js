@@ -17,6 +17,9 @@ var gAliensBottomRowIdx
 var gIntervalAliens
 var gTheGrave
 
+var gRock
+var ROCK = '⚓'
+var ROCK_SPEED = 500
 
 
 function createAliens(board) {
@@ -79,7 +82,6 @@ function checkTheGrave(alien) {
     }
 }
 
-
 function getAlienById(alienId, array) {
     for (var i = 0; i < array.length; i++) {
         var alien = array[i]
@@ -87,6 +89,7 @@ function getAlienById(alienId, array) {
     }
     return null // if the id dont exist===out from the loop return null.
 }
+
 function cleanAliens() {
     gIsWall = true
     gAliens = []
@@ -117,25 +120,42 @@ function moveAlienleft() {
     }
 }
 
-
 function moveAliens(alien) {
     if (!gGame.isOn) return
     const nextLocation = {
         i: alien.location.i + gMoveDiff.i,
         j: alien.location.j + gMoveDiff.j
     }
+    gRock = {
+        pos: {
+            i: getRandomInt(0,10),
+            j: gAliensTopRowIdx
+        }
+    }
+    if (nextLocation.i === gRock.pos.i && nextLocation.j === gRock.pos.i) {
 
-    if (nextLocation.i === BOARD_SIZE - 2) {
+        console.log(gRock);
+        shootRock(gRock)
+    }
+     
+    if (nextLocation.i === BOARD_SIZE - 2 || gHero.lives === 0) {
+        updateLives()
         gGame.isOn = false
         gameOver()
         showBtn()
         return
     }
 
+    const nextCell = gBoard[nextLocation.i][nextLocation.j]
+
+    if(nextCell === HERO){
+        gHero.lives--
+        updateLives()
+     }
+
     handleAlienHit(nextLocation)
 
     // if (gIsWall) return
-    const nextCell = gBoard[nextLocation.i][nextLocation.j]
     var before = nextCell.gameObject === ALIEN ? ALIEN : null
 
 
@@ -155,6 +175,7 @@ function moveAliens(alien) {
     gBoard[nextLocation.i][nextLocation.j].gameObject = ALIEN
     renderCell(alien.location, ALIEN)
 }
+
 function handleAlienHit(pos) {
     if (pos.j === BOARD_SIZE) {
         shiftBoardLeft()
@@ -163,8 +184,9 @@ function handleAlienHit(pos) {
         shiftBoardRight()
         gIsWall = true
     } else
-    gIsWall = false
+        gIsWall = false
 }
+
 function shiftBoardRight() {
     gAliensTopRowIdx++
     gAliensBottomRowIdx++
@@ -180,7 +202,7 @@ function shiftBoardRight() {
 function shiftBoardLeft() {
     gAliensTopRowIdx++
     gAliensBottomRowIdx++
-    shiftBoardDown(ALIEN_ROW_LENGTH - diffLevel, BOARD_SIZE-1)
+    shiftBoardDown(ALIEN_ROW_LENGTH - diffLevel, BOARD_SIZE - 1)
     clearInterval(gIntervalAliens)
     // renderBoard(gBoard)
 
@@ -192,8 +214,48 @@ function shiftBoardDown(fromJ, toJ) {
     cleanAliens()
     createAliensTWO(gBoard, gAliensBottomRowIdx, gAliensTopRowIdx, fromJ, toJ)
 }
+
+function shootRock(rock) {
+    rock.pos.i+=2
+    gBoard[rock.pos.i][rock.pos.j].gameObject = ROCK
+    renderCell(rock.pos, ROCK)
+
+    setTimeout(() => {
+        blinkRock(rock)
+    }, ROCK_SPEED);
+
+}
+
+function blinkRock(rock) {
+
+    gBoard[rock.pos.i][rock.pos.j].gameObject = null
+    renderCell(rock.pos, EMPTY)
+    // NEXT LOCATION: 
+    rock.pos.i++
+    rock.pos.j
+
+    if (rock.pos.i !== BOARD_SIZE-1) {
+        var nextCell = gBoard[rock.pos.i][rock.pos.j]
+
+         if(nextCell === HERO){
+            if(gHero.lives === 0){
+                gGame.isOn = false
+                gameOver()
+                showBtn()
+                return
+            }
+            gHero.lives--
+            updateLives()
+            return
+         }
+
+
+        shootRock(rock)
+}
+}
+
 function getAlienHTML(alien) {
     var color = alien.color
     return `<span class = "alien" style="background-color: ${color}" >${ALIEN}</span>`
-    
+
 }

@@ -84,6 +84,7 @@ function shoot(lazer) {
         blinkLaser(lazer)
     }, LASER_SPEED);
 }
+
 function superMode() {
     if (glazer.superModeCount === 0) return
     glazer.superModeCount--
@@ -102,7 +103,6 @@ function blinkLaser(lazer) {
     renderCell(lazer.pos, EMPTY)
     // NEXT LOCATION: 
     lazer.pos.i--
-    lazer.pos.j
 
     if (lazer.pos.i !== -1) {
         var nextCell = gBoard[lazer.pos.i][lazer.pos.j]
@@ -133,10 +133,6 @@ function blinkLaser(lazer) {
             return
         }
 
-
-        gBoard[lazer.pos.i][lazer.pos.j].gameObject = LASER
-        renderCell(lazer.pos, LASER)
-
         shoot(lazer)
 
     } else {
@@ -158,8 +154,6 @@ function killAlien(object) {
         }
     }
 }
-
-
 
 function checkAlienNeigh(rowIdx, colIdx) {
     for (var i = rowIdx - 1; i <= rowIdx + 1; i++) {
