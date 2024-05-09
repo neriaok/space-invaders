@@ -51,6 +51,7 @@ function onKeyDown(eventKeyboard) {
 
     switch (eventKeyboard) {
         case 'x':
+            console.log('supermode');
             superMode()
             break;
         case 'n':
@@ -88,13 +89,15 @@ function shoot(lazer) {
 function superMode() {
     if (glazer.superModeCount === 0) return
     glazer.superModeCount--
+    updateSuper()
+  
+    LASER_SPEED = 40
+    LASER = '💥'
+
     setTimeout(() => {
         LASER_SPEED = 80
         LASER = '⚡'
     }, 5000);
-    LASER_SPEED = 40
-    LASER = '💥'
-
 }
 // renders a LASER at specific cell for short time and removes it 
 function blinkLaser(lazer) {
@@ -170,12 +173,31 @@ function checkAlienNeigh(rowIdx, colIdx) {
                     }
                 }
                 killAlien(currAlien)
+                return
             }
         }
     }
     console.log('no alien around you!');
+    updateSpan()
 }
 function updateScore() {
     var score = document.querySelector('.score span')
     score.innerText = glazer.KillScore
+}
+
+function updateSuper(){
+    var elSuper = document.querySelector('.super span')
+    elSuper.innerText = ' ' + glazer.superModeCount
+    elSuper.style.color = 'red'
+}
+
+function updateSpan(){
+    var elmsg = document.querySelector('.neighbers span')
+    console.log(elmsg);
+    elmsg.innerText = 'NO ALIENS AROUND YOU'
+    elmsg.style.color = 'red'
+
+    setTimeout(() => {
+        elmsg.innerText = 'press n'
+    }, 1000);
 }
