@@ -61,7 +61,7 @@ function createAliensTWO(board, fromI, toI, fromJ, toJ) {
             gAliens.push(alien)
             board[alien.location.i][alien.location.j].gameObject = ALIEN
 
-            renderCell(alien.location, ALIEN)
+            renderCell(alien.location, getAlienHTML(alien))
 
             checkTheGrave(alien)
 
@@ -156,7 +156,7 @@ function moveAliens(alien) {
     handleAlienHit(nextLocation)
 
     // if (gIsWall) return
-    var before = nextCell.gameObject === ALIEN ? ALIEN : null
+    var before = nextCell.gameObject === ALIEN ? getAlienHTML(alien): null
 
 
 
@@ -173,7 +173,7 @@ function moveAliens(alien) {
     // Move to new location:
     alien.location = nextLocation
     gBoard[nextLocation.i][nextLocation.j].gameObject = ALIEN
-    renderCell(alien.location, ALIEN)
+    renderCell(alien.location, getAlienHTML(alien))
 }
 
 function handleAlienHit(pos) {
@@ -255,7 +255,7 @@ function blinkRock(rock) {
 }
 
 function getAlienHTML(alien) {
-    var color = alien.color
+    var color = getRandomColor()
     return `<span class = "alien" style="background-color: ${color}" >${ALIEN}</span>`
 
 }
